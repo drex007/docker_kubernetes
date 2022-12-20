@@ -72,6 +72,36 @@ TEMPLATES = [
  
 WSGI_APPLICATION = 'docker_kub.wsgi.application'
 
+REGION=os.getenv("REGION")
+DJANGO_SUPERUSER_USERNAME=os.getenv("DJANGO_SUPERUSER_USERNAME")
+DJANGO_SUPERUSER_PASSWORD=os.getenv("DJANGO_SUPERUSER_PASSWORD")
+DJANGO_SUPERUSER_EMAIL=os.getenv("DJANGO_SUPERUSER_EMAIL")
+DJANGO_SECRET_KEY=os.getenv("DJANGO_SECRET_KEY")
+POSTGRES_READY=str(os.getenv("POSTGRES_READY"))
+POSTGRES_DB=os.getenv("POSTGRES_DB")
+POSTGRES_PASSWORD=os.getenv("POSTGRES_PASSWORD")
+POSTGRES_USER=os.getenv("POSTGRES_USER")
+POSTGRES_HOST=os.getenv("POSTGRES_HOST")
+POSTGRES_PORT=os.getenv("POSTGRES_PORT")
+DB_IS_AVAIL =all(
+[    POSTGRES_DB,
+    POSTGRES_HOST,
+    POSTGRES_PASSWORD,
+    POSTGRES_USER,
+    POSTGRES_PORT ]
+)
+
+if DB_IS_AVAIL and POSTGRES_READY:
+      DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": POSTGRES_DB,
+            "USER": POSTGRES_USER,
+            "PASSWORD": POSTGRES_PASSWORD,
+            "HOST": POSTGRES_HOST,
+            "PORT": POSTGRES_PORT,
+        }
+    }
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
