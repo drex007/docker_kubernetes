@@ -1,0 +1,55 @@
+version: '3.8'
+services: #The services is just like asking you the name  of your container, in our case the name is docker_kub
+  docker_kub:
+    depends_on:
+      - postgres_db # the depends, looks for postgres_db before building. 
+    build:  #Refers to what container you will want to build and specifiy the poath in the context
+      context: .
+      dockerfile: Dockerfile
+    image: docker_kubernetes:v1 #Image, is the name you wnat to give the docker container/; 
+    environment:
+      - PORT=8020
+    env_file:
+      - .env #Ensures ypu have access to then .emv  file 
+    ports:
+      - "8002:8020"
+    command: sh -c "chmod +x /app/migrate.sh && sh /app/migrate.sh && /app/entrypoint.sh" #This command is use to to run all the shell(.sh) command
+    volumes:
+      - staticfiles:/app/staticfiles/
+  postgres_db:
+    image: postgres
+    command: -p 5433
+    env_file:
+      - .env # We try to access the env file inorder to have access to all postgres variable  or you can declare the variable like we did below 
+     
+    # environment:
+    #   - POSTGRES_DB=docker
+    #   - POSTGRES_PASSWORD=viktor
+    #   - POSTGRES_USER=viktor
+    #   - POSTGRES_HOST=postgres
+    #   - POSTGRES_PORT=5432
+    expose:
+      - 5433
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+  redis_db:
+    image: redis
+    restart: always
+    expose:
+      - 6380
+    ports:
+      - "6380:6380"
+    volumes:
+      - redis_data:/data
+    entrypoint: redis-server --appendonly yes --port 6380
+
+
+#Declaring a volume like this makes your data to stay persistent 
+volumes:
+  staticfiles:
+    external: true
+  postgres_data:
+  redis_data:
+
+
+ 
